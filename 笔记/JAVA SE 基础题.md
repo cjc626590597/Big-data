@@ -151,9 +151,15 @@ B S！=null 结果为false 整体就为false ，&& 后面就不会执行。下�
 
  ![img](https://uploadfiles.nowcoder.com/images/20190514/2970531_1557843285711_B37B82009A3A0D1283C42A49F05F8BC7)
 
-#### 9. 修饰符
+#### 9. 访问权限修饰符
 
  ![img](http://uploadfiles.nowcoder.com/images/20150921/458054_1442766565525_E93E59ACFE1791E0A5503384BEBDC544)
+
+（ 1 ）对于外部类而言，它也可以使用访问控制符修饰，但外部类只能有两种访问控制级别： public 和默认。因为外部类没有处于任何类的内部，也就没有其所在类的内部、所在类的子类两个范围，因此 private 和 protected 访问控制符对外部类没有意义。
+
+（ 2 ）内部类的上一级程序单元是外部类，它具有 4 个作用域：同一个类（ private ）、同一个包（ protected ）和任何位置（ public ）。
+
+（ 3 ） 因为局部成员的作用域是所在方法，其他程序单元永远不可能访问另一个方法中的局部变量，所以所有的局部成员都不能使用访问控制修饰符修饰。
 
 #### 10.动态语言
 
@@ -419,3 +425,7 @@ Xss 栈大小。 就是创建线程后，分配给每一个线程的内存大小
 并发收集器设置
 -XX:+CMSIncrementalMode:设置为增量模式。适用于单CPU情况。
 -XX:ParallelGCThreads=n:设置并发收集器年轻代收集方式为并行收集时，使用的CPU数。并行收集线程数。
+
+#### 25. IO流继承关系
+
+ <img src="http://uploadfiles.nowcoder.com/images/20150328/138512_1427527478646_1.png" alt="img" style="zoom:80%;" />
