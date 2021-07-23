@@ -1,0 +1,23 @@
+package com.atguigu.bigdata.spark.core.rdd.operator.transform
+
+import org.apache.spark.{SparkConf, SparkContext}
+
+object Spark18_RDD_Operator_Transform {
+  def main(args: Array[String]): Unit = {
+    val sparkConf = new SparkConf().setMaster("local[*]").setAppName("RDD")
+    val sc = new SparkContext(sparkConf)
+
+    val rdd = sc.makeRDD(List(("a",1),("a",2),("a",3),("b",4),("b",5),("b",6)), 2)
+
+    val newRDD = rdd.aggregateByKey((0,0))(
+      (u, t) => (u._1+t, u._2+1),
+      (p1, p2) => (p1._1+p2._1, p1._2+p2._2)
+    )
+
+    newRDD.mapValues {
+      case (num, count) => num / count
+    }.collect().foreach(println)
+
+    sc.stop()
+  }
+}
