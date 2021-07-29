@@ -28,7 +28,7 @@ http://hadoop102:9870/explorer.html#/
 
 
 
-bin/zkServer.sh start
+/opt/module/zookeeper-3.4.10/bin/zkServer.sh start
 
 /opt/module/kafka/bin/kafka-server-start.sh -daemon /opt/module/kafka/config/server.properties
 
