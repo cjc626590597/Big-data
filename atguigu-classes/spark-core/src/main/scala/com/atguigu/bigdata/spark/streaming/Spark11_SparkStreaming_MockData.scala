@@ -30,7 +30,7 @@ object Spark11_SparkStreaming_MockData {
         }
       )
 
-      Thread.sleep(5000)
+      Thread.sleep(1000)
     }
   }
 
@@ -39,7 +39,7 @@ object Spark11_SparkStreaming_MockData {
     val areaArray = Array("华东","华南","华西","华北")
     val cityArray = Array("上海","深圳","西安","北京")
     val random = Random
-    for( i <- 1 to 50){
+    for( i <- 1 to random.nextInt(50)){
       val time = System.currentTimeMillis()
       val area = areaArray(random.nextInt(4))
       val city = cityArray(random.nextInt(4))
