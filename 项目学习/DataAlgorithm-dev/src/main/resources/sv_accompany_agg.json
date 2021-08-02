@@ -1,0 +1,75 @@
+{
+  "analyzeModel": {
+    "params": [
+      {
+        "cnName": "保存数据分区数",
+        "enName": "numPartitions",
+        "desc": "保存数据分区数",
+        "value": "30"
+      },
+      {
+        "cnName": "同一分片内关联对象数",
+        "enName": "maxAssembleTotal",
+        "desc": "同一分片内关联对象数",
+        "value": "30"
+      },
+      {
+        "cnName": "周期天数",
+        "enName": "aggDays",
+        "desc": "周期天数",
+        "value": "7"
+      },
+      {
+        "cnName": "关系类别",
+        "enName": "relType",
+        "desc": "关系类别,如：imei-imsi,imsi-imsi",
+        "value": "person-person"
+      },
+      {
+        "cnName": "数据库名称",
+        "enName": "dataBaseName",
+        "desc": "数据库名称",
+        "value": "default"
+      },
+      {
+        "cnName": "数据库类型",
+        "enName": "databaseType",
+        "desc": "数据库类型",
+        "value": "hive"
+      },
+      {
+        "cnName": "数据时间范围",
+        "enName": "prevHourNums",
+        "desc": "获取多长时间的数据，单位是小时",
+        "value": "24"
+      },
+      {
+        "cnName": "伴随分析场所类型",
+        "enName": "svType",
+        "desc": "伴随分析场所类型",
+        "value": "TSW"
+      },
+      {
+        "cnName": "最小支持度",
+        "enName": "minSupport",
+        "desc": "最小支持度",
+        "value": "0.1"
+      },
+      {
+        "cnName": "最小支持次数",
+        "enName": "minCount",
+        "desc": "最小支持次数",
+        "value": "1"
+      }
+    ],
+    "isTag": 1,
+    "tagInfo": [],
+    "mainClass": "com.suntek.algorithm.process.accompany.SvAccompanyResultHandler",
+    "modelId": 8,
+    "modelName": "网吧场所TSW汇总分析",
+    "stepId": 15,
+    "taskId": 12,
+    "batchId": 20201214150200,
+    "descInfo": ""
+  }
+}

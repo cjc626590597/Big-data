@@ -1,0 +1,75 @@
+{
+  "analyzeModel": {
+    "params": [
+      {
+        "cnName": "关系类别",
+        "enName": "relType",
+        "desc": "关系类别,如：imei-imsi,imsi-imsi",
+        "value": "car-imsi"
+      },
+      {
+        "cnName": "算法类型",
+        "enName": "algorithmType",
+        "desc": "算法类型(可选一个或多个，多个用逗号分开),如：lcss,fptree,dtw,entropy",
+        "value": "fptree,dtw,entropy"
+      },
+      {
+        "cnName": "碰撞时间分片",
+        "enName": "secondsSeriesThreshold",
+        "desc": "碰撞时间分片，单位秒",
+        "value": "60"
+      },
+      {
+        "cnName": "时间压缩间隔",
+        "enName": "timeSeriesThreshold",
+        "desc": "碰撞时间分片，单位秒",
+        "value": "180"
+      },
+      {
+        "cnName": "相似度计算结果的放大因子",
+        "enName": "mf",
+        "desc": "相似度计算结果的放大因子",
+        "value": "1.0"
+      },
+      {
+        "cnName": "数据库名称",
+        "enName": "dataBaseName",
+        "desc": "数据库名称",
+        "value": "default"
+      },
+      {
+        "cnName": "数据库类型",
+        "enName": "databaseType",
+        "desc": "数据库类型",
+        "value": "hive"
+      },
+      {
+        "cnName": "数据时间范围",
+        "enName": "prevHourNums",
+        "desc": "获取多长时间的数据，单位是小时",
+        "value": "2"
+      },
+      {
+        "cnName": "最小支持度",
+        "enName": "minSupport",
+        "desc": "最小支持度",
+        "value": "0.1"
+      },
+      {
+        "cnName": "数据时间范围",
+        "enName": "minCount",
+        "desc": "最小支持次数",
+        "value": "2"
+      }
+    ],
+    "isTag": 1,
+    "tagInfo": [],
+    "mainClass": "com.suntek.algorithm.process.distribution.Distribution",
+    "modelId": 8,
+    "modelName": "car-imsi分布",
+    "stepId": 15,
+    "taskId": 12,
+    "batchId": 20200902120000,
+    "descInfo": ""
+  }
+}

@@ -1,0 +1,15 @@
+# es配置项，ip:port，多个用逗号隔开
+elasticsearch.nodes.tcp=@_ES_ADDRESS_TCP_@
+elasticsearch.nodes.http=@_ES_ADDRESS_HTTP_@
+#如果没有设置用户密码，可以不配置
+elasticsearch.username=@_ES_USERNAME_@
+elasticsearch.password=@_ES_PASSWORD_@
+
+# mysql 配置项
+mysql.ip=@_MYSQL_IP_@
+mysql.port=@_MYSQL_PORT_@
+mysql.username=@_MYSQL_USERNAME_@
+mysql.password=@_MYSQL_PASSWORD_@
+# XXL 配置
+xxl.console.url=@_XXL_CONSOLE_URL_@
+hive.nodes=@_HIVE_SERVER_NODES_@

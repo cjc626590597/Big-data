@@ -1,0 +1,45 @@
+{
+  "analyzeModel": {
+    "params": [
+      {
+        "cnName": "算法名",
+        "enName": "algorithm",
+        "desc": "算法名",
+        "value": "lcss_car_car"
+      },
+      {
+        "cnName": "类型",
+        "enName": "a_type",
+        "desc": "类型",
+        "value": "car_car"
+      },
+      {
+        "cnName": "数据库名称",
+        "enName": "dataBaseName",
+        "desc": "数据库名称",
+        "value": "default"
+      },
+      {
+        "cnName": "数>据库类型",
+        "enName": "databaseType",
+        "desc": "数据库类型",
+        "value": "hive"
+      },
+      {
+        "cnName": "评估类型",
+        "enName": "evaluationType",
+        "desc": "评估类型",
+        "value": "classify"
+      }
+    ],
+    "isTag": 1,
+    "tagInfo": [],
+    "mainClass": "com.suntek.algorithm.evaluation.AcompanyEvaluation",
+    "modelId": 100,
+    "modelName": "模型评估",
+    "stepId": 15,
+    "taskId": 100,
+    "batchId": 20201112000000,
+    "descInfo": ""
+  }
+}

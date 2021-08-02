@@ -1,0 +1,69 @@
+{
+  "analyzeModel": {
+    "params": [
+      {
+        "cnName": "关系类别",
+        "enName": "relType",
+        "desc": "关系类别,如：imei-imsi,imsi-imsi",
+        "value": "person-person"
+      },
+      {
+        "cnName": "碰撞时间分片",
+        "enName": "secondsSeriesThreshold",
+        "desc": "碰撞时间分片，单位秒",
+        "value": "60"
+      },
+      {
+        "cnName": "时间压缩间隔",
+        "enName": "timeSeriesThreshold",
+        "desc": "碰撞时间分片，单位秒",
+        "value": "30"
+      },
+      {
+        "cnName": "数据库名称",
+        "enName": "dataBaseName",
+        "desc": "数据库名称",
+        "value": "default"
+      },
+      {
+        "cnName": "数据库类型",
+        "enName": "databaseType",
+        "desc": "数据库类型",
+        "value": "hive"
+      },
+      {
+        "cnName": "数据时间范围",
+        "enName": "prevHourNums",
+        "desc": "获取多长时间的数据，单位是小时",
+        "value": "24"
+      },
+      {
+        "cnName": "数据来源",
+        "enName": "dataSource",
+        "desc": "数据来源",
+        "value": "5"
+      },
+      {
+        "cnName": "分片对象阙值",
+        "enName": "seriesCount",
+        "desc": "分片对象阙值",
+        "value": "60"
+      },
+      {
+        "cnName": "伴随分析场所类型",
+        "enName": "svType",
+        "desc": "伴随分析场所类型(TSW TZ)",
+        "value": "TSW"
+      }
+    ],
+    "isTag": 1,
+    "tagInfo": [],
+    "mainClass": "com.suntek.algorithm.process.accompany.SvAccompanyDayHandler",
+    "modelId": 8,
+    "modelName": "网吧场所按天分析",
+    "stepId": 15,
+    "taskId": 12,
+    "batchId": 20201214150200,
+    "descInfo": ""
+  }
+}

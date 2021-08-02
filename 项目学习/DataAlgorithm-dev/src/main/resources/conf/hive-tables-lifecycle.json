@@ -1,0 +1,216 @@
+{
+  "batchId": 0,
+  "analyzeModel": {
+    "env": {
+      "shellName": "data-algorithm.sh",
+      "deployEnvName": "ALG_DEPLOY_HOME"
+    },
+    "inputs": [{
+      "cnName": "关系类别",
+      "enName": "relType",
+      "desc": "关系类别,如：imei-imsi,imsi-imsi",
+      "inputVal": "hive-life-cycle"
+    }, {
+      "cnName": "hive分区表生命周期管理",
+      "enName": "hiveTablesLifeCycle",
+      "desc": "hive分区表生命周期管理:只支持分区表生命周期管理,时间分区只保留最近多少天数据,初定：标准表保留近30天，分布表保留近180天，中间表保留近180天，汇总结果表保留近7天",
+      "inputVal": [{
+        "name": "HIVE_FACE_DETECT_RL",
+        "type": "external",
+        "partitions": [{
+          "name": "STAT_DAY",
+          "type": "datetime",
+          "format": "yyMMdd",
+          "days": 30
+        }]
+      },
+        {
+          "name": "CAR_DETECT_INFO",
+          "type": "external",
+          "partitions": [{
+            "name": "STAT_DAY",
+            "type": "datetime",
+            "format": "yyMMdd",
+            "days": 30
+          }]
+        },
+        {
+          "name": "EFENCE_DETECT_INFO",
+          "type": "external",
+          "partitions": [{
+            "name": "STAT_DAY",
+            "type": "datetime",
+            "format": "yyMMdd",
+            "days": 30
+          }]
+        },
+        {
+          "name": "DM_RELATION_DISTRIBUTE_DETAIL",
+          "type": "external",
+          "partitions": [{
+            "name": "STAT_DATE",
+            "type": "datetime",
+            "format": "yyyyMMddHH",
+            "days": 180
+          }]
+        },
+        {
+          "name": "DM_RELATION_DISTRIBUTE_STAT",
+          "type": "external",
+          "partitions": [{
+            "name": "STAT_DATE",
+            "type": "datetime",
+            "format": "yyyyMMddHH",
+            "days": 180
+          }]
+        },
+        {
+          "name": "DM_LCSS_OBJECT_HOUR",
+          "type": "external",
+          "partitions": [{
+            "name": "STAT_DATE",
+            "type": "datetime",
+            "format": "yyyyMMdd",
+            "days": 180
+          }]
+        },
+        {
+          "name": "DM_LCSS_OBJECT_DAY",
+          "type": "external",
+          "partitions": [{
+            "name": "STAT_DATE",
+            "type": "datetime",
+            "format": "yyyyMMdd",
+            "days": 180
+          }]
+        },
+        {
+          "name": "DM_LCSS_DAY",
+          "type": "external",
+          "partitions": [{
+            "name": "STAT_DATE",
+            "type": "datetime",
+            "format": "yyyyMMdd",
+            "days": 180
+          }]
+        },
+        {
+          "name": "DM_LCSS",
+          "type": "external",
+          "partitions": [{
+            "name": "STAT_DATE",
+            "type": "datetime",
+            "format": "yyyyMMdd",
+            "days": 7
+          }]
+        },
+        {
+          "name": "DM_ENTROPY_WEIGHT",
+          "type": "external",
+          "partitions": [{
+            "name": "STAT_DATE",
+            "type": "datetime",
+            "format": "yyyyMMdd",
+            "days": 180
+          }]
+        },
+        {
+          "name": "DM_ENTROPY_RESULT",
+          "type": "external",
+          "partitions": [{
+            "name": "STAT_DATE",
+            "type": "datetime",
+            "format": "yyyyMMdd",
+            "days": 180
+          }]
+        },
+        {
+          "name": "DM_DTW_ITEMS",
+          "type": "external",
+          "partitions": [{
+            "name": "STAT_DATE",
+            "type": "datetime",
+            "format": "yyyyMMdd",
+            "days": 180
+          }]
+        },
+        {
+          "name": "DM_DTW",
+          "type": "external",
+          "partitions": [{
+            "name": "STAT_DATE",
+            "type": "datetime",
+            "format": "yyyyMMdd",
+            "days": 7
+          }]
+        },
+        {
+          "name": "DM_FPTREE_FREREQUENT_ITEMS",
+          "type": "external",
+          "partitions": [{
+            "name": "STAT_DATE",
+            "type": "datetime",
+            "format": "yyyyMMdd",
+            "days": 180
+          }]
+        },
+        {
+          "name": "DM_FPTREE",
+          "type": "external",
+          "partitions": [{
+            "name": "STAT_DATE",
+            "type": "datetime",
+            "format": "yyyyMMdd",
+            "days": 7
+          }]
+        },
+        {
+          "name": "SV_ACCOMPANY_DAY",
+          "type": "external",
+          "partitions": [{
+            "name": "STAT_DATE",
+            "type": "datetime",
+            "format": "yyyyMMdd",
+            "days": 180
+          }]
+        },
+        {
+          "name": "SV_ACCOMPANY",
+          "type": "external",
+          "partitions": [{
+            "name": "STAT_DATE",
+            "type": "datetime",
+            "format": "yyyyMMdd",
+            "days": 7
+          }]
+        },
+        {
+          "name": "DM_RELATION",
+          "type": "external",
+          "partitions": [{
+            "name": "STAT_DATE",
+            "type": "datetime",
+            "format": "yyyyMMdd",
+            "days": 7
+          }]
+        },
+        {
+          "name": "TB_ACCOMPANY_EVALUATION_RESULT",
+          "type": "external",
+          "partitions": [{
+            "name": "BD",
+            "type": "datetime",
+            "format": "yyyyMMdd",
+            "days": 30
+          }]
+        }
+      ]
+    }],
+    "mainClass": "com.suntek.algorithm.process.lifecycle.HiveLifeCycleHandler",
+    "modelId": 0,
+    "modelName": "生命周期管理",
+    "stepId": 100000,
+    "taskId": 100000,
+    "descInfo": ""
+  }
+}
