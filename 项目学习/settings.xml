@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+    <localRepository>C:\Users\suntek\.m2\repository</localRepository>
+    <pluginGroups>
+        <pluginGroup>org.mortbay.jetty</pluginGroup>
+        <pluginGroup>org.codehaus.cargo</pluginGroup>
+        <pluginGroup>com.catt.plugins</pluginGroup>
+        <pluginGroup>com.baomidou</pluginGroup>
+    </pluginGroups>
+    <proxies>
+        <!--
+         <proxy>
+          <id>optional</id>
+          <active>true</active>
+          <protocol>http</protocol>
+          <username>jiazhizhong</username> 
+          <password>pci2016</password>
+          <host>10.200.100.81</host>
+          <port>8080</port>
+          <nonProxyHosts>10.*;172.*;*.local;*.pcisuntek.com;*.suntektech.com;*.pci-suntektech.com</nonProxyHosts>
+        </proxy>-->
+    </proxies>
+
+    <servers>
+        <server>
+            <id>nexus-releases</id>
+            <username>admin</username>
+            <password>admin123</password>
+        </server>
+        <server>
+            <id>nexus-snapshots</id>
+            <username>admin</username>
+            <password>admin123</password>
+        </server>
+    </servers>
+    <mirrors>
+	<!--
+	 <mirror>  
+		 <id>alimaven</id>  
+		 <name>aliyun maven</name>  
+		 <url>http://maven.aliyun.com/nexus/content/groups/public/</url>  
+		 <mirrorOf>central</mirrorOf>  
+	 </mirror> 
+	-->
+	<mirror>
+		<id>nexus</id>
+		<mirrorOf>*</mirrorOf>
+		<url>http://172.25.20.192:8081/nexus/content/groups/public/</url>
+	</mirror>
+		<mirror>
+		<id>repo1</id>
+		<mirrorOf>central</mirrorOf>
+		<name>Human Readable Name for this Mirror.</name>
+		<url>https://repo1.maven.org/maven2/</url>
+     </mirror>
+     <mirror>
+       <id>repo2</id>
+       <mirrorOf>central</mirrorOf>
+       <name>Human Readable Name for this Mirror.</name>
+       <url>http://repo2.maven.org/maven2/</url>
+    </mirror>    
+	 <mirror>
+	 <id>nexus-aliyun</id>
+	 <mirrorOf>*,!jeecg,!jeecg-snapshots,!mapr-releases</mirrorOf>
+     <name>Nexus aliyun</name>
+	     <url>http://maven.aliyun.com/nexus/content/groups/public</url> 
+	 </mirror> 
+	 <mirror>
+	     <id>mapr-public</id>
+		 <mirrorOf>mapr-releases</mirrorOf>
+		 <name>mapr_releases</name>
+		 <url>https://maven.aliyun.com/repository/mapr-public</url>
+	 </mirror>
+
+    </mirrors>
+
+    <profiles>
+        <profile>
+            <id>nexus-profile</id>
+            <repositories>
+                <repository>
+                    <id>nexus</id>
+                    <name>nexus</name>
+                    <url>http://172.25.20.192:8081/nexus/content/groups/public/</url>
+                    <layout>default</layout>
+                    <!-- <snapshotPolicy>always</snapshotPolicy>-->
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                        <updatePolicy>interval:10</updatePolicy>
+                    </snapshots>
+                </repository>
+<!--		<repository>-->
+<!--			<id>mvnrepository</id>-->
+<!--			<url>https://mvnrepository.com/</url>-->
+<!--		</repository>-->
+<!--		<repository>-->
+<!--			<id>aliyun</id>-->
+<!--			<url>http://maven.aliyun.com/nexus/content/groups/public/</url>-->
+<!--		</repository>-->
+            </repositories>
+        </profile>
+    </profiles>
+    <activeProfiles>
+        <activeProfile>nexus-profile</activeProfile>
+    </activeProfiles>
+</settings>
