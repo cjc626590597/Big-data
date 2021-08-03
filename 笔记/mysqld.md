@@ -700,3 +700,39 @@
 
 
 根据这个解释，小王在插入数据时，会出现等待状态，直到小张执行 `COMMIT` 结束它所处的事务，或者出现等待超时。
+
+#### 25. sql笔记
+
+1. 排名(如果无法用窗口函数则通过自连接和<=号配合COUNT函数找出排名)
+   - RANK() 排序相同时会重复，总数不会变  
+   - DENSE_RANK() 排序相同时会重复，总数会减少
+   - ROW_NUMBER() 会根据顺序计算
+
+2. 判断是否为空 is null
+3. 查找包含字符robot的... like '%robot%'
+4. 查找种类数量大于5的 group by categoryID having count(*) > 5
+5. 连接字符 concat.ws(','    , str1, str2) 
+6. 常用的三种插入数据的语句:
+   - insert into表示插入数据，数据库会检查主键，如果出现重复会报错
+   - replace into表示插入替换数据，需求表中有PrimaryKey，或unique索引，如果数据库已经存在数据，则用新数据替换，如果没有数据效果则和insert into一样
+   - insert ignore表示，如果中已经存在相同的记录，则忽略当前新数据；insert ignore into actor values("3","ED","CHASE","2006-02-15 12:34:33")
+
+7. 创建数据表的三种方法
+   - 常规创建
+     create table if not exists 目标表
+   - 复制表格
+     create 目标表 like 来源表
+   - 将table1的部分拿来创建table2
+     create table if not exists actor_name(first_name varchar(45) not null, last_name varchar(45) not null)
+     (insert into actor_name) select first_name,last_name from actor
+
+8. 创建索引的三种方法
+   - CREATE UNIQUE INDEX indexName ON 表名(列名(length)) 
+   - ALTER 表名 ADD UNIQUE [indexName] ON (列名(length)) 
+   CREATE TABLE mytable(
+   ID INT NOT NULL,
+   username VARCHAR(16) NOT NULL,
+   UNIQUE [indexName] (username(length))
+
+   
+
