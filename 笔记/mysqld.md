@@ -734,5 +734,9 @@
    username VARCHAR(16) NOT NULL,
    UNIQUE [indexName] (username(length))
 
-   
 
+9. 创建视图  create view actor_name_view AS select first_name AS first_name_v, last_name AS last_name_v from actor
+
+10. 使用强制索引查询
+    - MYSQL中强制索引查询使用：FORCE INDEX(indexname);
+    - SQLite中强制索引查询使用：INDEXED BY indexname;

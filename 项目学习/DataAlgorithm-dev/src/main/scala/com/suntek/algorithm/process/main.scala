@@ -22,6 +22,8 @@ object main {
   val logger: Logger = LoggerFactory.getLogger(this.getClass)
 
   def main(args: Array[String]): Unit = {
+
+
     logger.info(s"args size={},{}", args.length, args(0))
     if (args == null || args.length < 1) throw new Exception("请求参数有误，请求参数依次为:jobid logid jobServiceUrl 任务json")
 
