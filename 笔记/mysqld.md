@@ -740,3 +740,12 @@
 10. 使用强制索引查询
     - MYSQL中强制索引查询使用：FORCE INDEX(indexname);
     - SQLite中强制索引查询使用：INDEXED BY indexname;
+
+11. 添加一列 Alter table actor add column create_date datetime NOT NULL default '2020-10-01 00:00:00'
+
+12. 创建一个诱发器
+    - create trigger audit_log
+      after insert on employees_test
+      begin 
+       INSERT INTO audit VALUES (new.id, new.name);
+      end
