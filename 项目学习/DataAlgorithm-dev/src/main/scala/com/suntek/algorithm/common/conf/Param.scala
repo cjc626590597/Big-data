@@ -226,15 +226,16 @@ class Param(argsStr: String) extends Serializable {
     var path: String = System.getenv(deployEnvName)
     if (path == null){
       //读取不到环境变量时，为本地调试模式，为避免集群也忘了配置环境变量，导致相对路径能用，此处定为各自开发的绝对路径
-      path = "D:\\workpace\\PCI\\analyse-model\\DataAlgorithm\\src\\main\\resources\\conf\\model.sql"
+//      path = "D:\\workpace\\PCI\\analyse-model\\DataAlgorithm\\src\\main\\resources\\conf\\model.sql"
+      path = "C:\\Users\\suntek\\Desktop\\数据开发\\Big-data\\项目学习\\DataAlgorithm-dev\\src\\main\\resources\\conf\\model.sql"
     }
 
     var modelSqlFilePath = s"$path/conf/model.sql"
     println(s"modelSqlFilePath: ${modelSqlFilePath}")
     var conf = new java.io.File(modelSqlFilePath)
     if (!conf.exists()) {
-      modelSqlFilePath = "/opt/data-algorithm/conf/model.sql"
-//      modelSqlFilePath = "D:\\workpace\\PCI\\analyse-model\\DataAlgorithm\\src\\main\\resources\\conf\\model.sql"
+//      modelSqlFilePath = "/opt/data-algorithm/conf/model.sql"
+      modelSqlFilePath = "C:\\Users\\suntek\\Desktop\\数据开发\\Big-data\\项目学习\\DataAlgorithm-dev\\src\\main\\resources\\conf\\model.sql"
       conf = new java.io.File(modelSqlFilePath)
     }
     readConf(conf)
@@ -245,14 +246,15 @@ class Param(argsStr: String) extends Serializable {
     var path: String = System.getenv(deployEnvName)
     if (path == null){
       //读取不到环境变量时，为本地调试模式，为避免集群也忘了配置环境变量，导致相对路径能用，此处定为各自开发的绝对路径
-      path = "D:\\workpace\\PCI\\analyse-model\\DataAlgorithm\\src\\main\\resources"
+//      path = "D:\\workpace\\PCI\\analyse-model\\DataAlgorithm\\src\\main\\resources"
+      path = "C:\\Users\\suntek\\Desktop\\数据开发\\Big-data\\项目学习\\DataAlgorithm-dev\\src\\main\\resources"
     }
 
     var commonConfFilePath = s"$path/conf/common.conf"
     var conf = new java.io.File(commonConfFilePath)
     if (!conf.exists()) {
-      commonConfFilePath = "/opt/data-algorithm/conf/common.conf"
-//      commonConfFilePath = "D:\\workpace\\PCI\\analyse-model\\DataAlgorithm\\src\\main\\resources"
+//      commonConfFilePath = "/opt/data-algorithm/conf/common.conf"
+      commonConfFilePath = "C:\\Users\\suntek\\Desktop\\数据开发\\Big-data\\项目学习\\DataAlgorithm-dev\\src\\main\\resources"
       conf = new java.io.File(commonConfFilePath)
     }
     logger.info("common.conf path = " + conf.getAbsolutePath)
