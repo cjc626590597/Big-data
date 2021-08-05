@@ -227,7 +227,7 @@ class Param(argsStr: String) extends Serializable {
     if (path == null){
       //读取不到环境变量时，为本地调试模式，为避免集群也忘了配置环境变量，导致相对路径能用，此处定为各自开发的绝对路径
 //      path = "D:\\workpace\\PCI\\analyse-model\\DataAlgorithm\\src\\main\\resources\\conf\\model.sql"
-      path = "C:\\Users\\suntek\\Desktop\\数据开发\\Big-data\\项目学习\\DataAlgorithm-dev\\src\\main\\resources\\conf\\model.sql"
+      path = "C:\\Users\\suntek\\Desktop\\数据开发\\Big-data\\项目学习\\DataAlgorithm-dev\\src\\main\\resources"
     }
 
     var modelSqlFilePath = s"$path/conf/model.sql"
