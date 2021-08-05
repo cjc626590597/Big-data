@@ -405,7 +405,7 @@ object LCSSDayHandler {
 
     val batchId = param.keyMap("batchId").toString
 
-    val sparkSession = SparkUtil.getSparkSession(master, s"LCSS ${param.releTypeStr} ${batchId} Day Job", param)
+    val sparkSession = SparkUtil.getSparkSession(master, s"LCSS ${}param.releTypeStr ${batchId} Day Job", param)
 
     processSub(param, sparkSession)
 

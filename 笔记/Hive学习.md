@@ -2,6 +2,10 @@
 
 Linux mysql安装 https://www.cnblogs.com/cheneyboon/p/14672581.html
 
+service mysql start
+
+mysql -uroot -p
+
 
 
 /opt/graphdb/hugegraph-server/bin/start-hugegraph.sh
