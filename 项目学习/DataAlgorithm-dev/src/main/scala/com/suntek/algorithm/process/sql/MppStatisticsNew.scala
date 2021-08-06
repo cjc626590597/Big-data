@@ -321,6 +321,7 @@ object MppStatisticsNew {
         mpp.excute(sql, queryBean)
       }
     })
+    println("??")
   }
 
   def delPartition(mpp: Mpp, sParam: MppStatisticsParamNew, queryBean: QueryBean, table: String, partition: String) = {
@@ -562,6 +563,11 @@ class MppStatisticsParamNew(param: Param, batchId: String, typeFlag: Int) extend
   // 加载sql文件文件
   def loadSqlFile(fileName: String, formatStr: String): Array[String] = {
     var path = System.getenv(param.deployEnvName)
+    if (path == null){
+      //读取不到环境变量时，为本地调试模式，为避免集群也忘了配置环境变量，导致相对路径能用，此处定为各自开发的绝对路径
+      //      path = "D:\\workpace\\PCI\\analyse-model\\DataAlgorithm\\src\\main\\resources"
+      path = "C:/Users/suntek/Desktop/数据开发/Big-data/项目学习/DataAlgorithm-dev/src/main/resources"
+    }
     if (debug) {
       path = this.getClass.getResource("/").getPath
     }

@@ -48,81 +48,79 @@ object main {
       val mainClass = param.keyMap("mainClass").toString
       logger.info(s"mainClass: $mainClass")
       ConstantUtil.init(param)
-      println(mainClass)
-      println("???")
-//      mainClass match {
-//        // distribution
-//        case "com.suntek.algorithm.process.distribution.Distribution" => Distribution.process(param)
-//
-//        // fptree
-//        case "com.suntek.algorithm.process.fptree.FPTreeDayHandler" => FPTreeDayHandler.process(param)
-//        case "com.suntek.algorithm.process.fptree.FPTreeResultHandler" => FPTreeResultHandler.process(param)
-//        case "com.suntek.algorithm.process.fptree.FPTreeHandler" => FPTreeHandler.process(param)
-//
-//        // dtw
-//        case "com.suntek.algorithm.process.dtw.DtwDayHandler" => DtwDayHandler.process(param)
-//        case "com.suntek.algorithm.process.dtw.DtwResultHandler" => DtwResultHandler.process(param)
-//        case "com.suntek.algorithm.process.dtw.DtwHandler" => DtwHandler.process(param)
-//        // lcss
-//        case "com.suntek.algorithm.process.lcss.LCSSDayHandler" => LCSSDayHandler.process(param)
-//        case "com.suntek.algorithm.process.lcss.LCSSResultHandler" => LCSSResultHandler.process(param)
-//        case "com.suntek.algorithm.process.lcss.LCSSHandler" => LCSSHandler.process(param)
-//
-//        // accompany - evaluation（伴随评价）
-//        case "com.suntek.algorithm.evaluation.AcompanyEvaluation" => AcompanyEvaluation.process(param)
-//        case "com.suntek.algorithm.fusion.Models" => Models.deal(param)
-//        case "com.suntek.algorithm.fusion.FusionHandler" => FusionHandler.process(param)
-//        case "com.suntek.algorithm.fusion.FusionRelationHiveToEs" => FusionRelationHiveToEs.process(param)
-//
-//
-//        // sv accompany（伴随）
-//        case "com.suntek.algorithm.process.accompany.SvAccompanyDayHandler" => SvAccompanyDayHandler.process(param)
-//        case "com.suntek.algorithm.process.accompany.SvAccompanyResultHandler" => SvAccompanyResultHandler.process(param)
-//        case "com.suntek.algorithm.process.accompany.SvAccompanyHandler" => SvAccompanyHandler.process(param)
-//
-//        //熵值法
-//        case "com.suntek.algorithm.process.entropy.FeatureDataPreprocess" => FeatureDataPreprocess.process(param) //特征数据预处理
-//        case "com.suntek.algorithm.process.entropy.EntropyWeightHandler" => EntropyWeightHandler.process(param)
-//        case "com.suntek.algorithm.process.entropy.EntropyResultHandler" => EntropyResultHandler.process(param)
-//        case "com.suntek.algorithm.process.sql.SqlAnalysisPreprocess" => SqlAnalysisPreprocess.process(param)
-//        case "com.suntek.algorithm.process.entropy.FeatureDataHandler" => FeatureDataHandler.process(param)
-//        case "com.suntek.algorithm.process.entropy.EntropyHandler" => EntropyHandler.process(param)
-//
-//        // 数据同步
-//        case "com.suntek.algorithm.process.sql.SynchronizeDataFromMPPToHive" =>SynchronizeDataFromMPPToHive.process(param)
-//
-//        // 轨迹统计
-//        case  "com.suntek.algorithm.process.sql.MppStatistics" => {
-//          if(param.mppdbType == "snowballdb") {
-//            SnowballStatistics.process(param)
-//          }
-//          else {
-//            MppStatisticsNew.process(param)
-//          }
-//        }
-//
-//          //一般规则统计
-//        case "com.suntek.algorithm.fusion.PersonFaceRelateStatHandler" => PersonFaceRelateStatHandler.process(param)
-//        case "com.suntek.algorithm.fusion.Car2CarSamePersonRelateHandler" => Car2CarSamePersonRelateHandler.process(param)
-//        case "com.suntek.algorithm.fusion.P2PSameCarRelateHandler" => P2PSameCarRelateHandler.process(param)
-//        //生命周期管理
-//        case "com.suntek.algorithm.process.lifecycle.HiveLifeCycleHandler" => HiveLifeCycleHandler.process(param)
-//
-//          // 人脸Id与人员证件关联分析
-//        case "com.suntek.algorithm.fusion.FaceIdentificationHandler" => FaceIdentificationHandler.process(param)
-//        // 人员Id与车辆(主副驾驶)关联分析
-//        case "com.suntek.algorithm.fusion.PersonCarDriverHandler" => PersonCarDriverHandler.process(param)
-//        // 人脸Id与人员证件关联分析
-//        case "com.suntek.algorithm.fusion.PersonIdBodyHandler" => PersonIdBodyHandler.process(param)
-//        // 设备关联分析
-//        case "com.suntek.algorithm.process.device.DeviceRelations" => DeviceRelations.process(param)
-//        // 机场一人多证统计
-//        case "com.suntek.algorithm.process.airport.CredentialsDetectHandler" => CredentialsDetectHandler.process(param)
-//
-//        case _ => throw new Exception("未能启动配置的任务,请确保启动类已存在.")
-//      }
-//      ConstantUtil.successTask
-//      ConstantUtil.success
+      mainClass match {
+        // distribution
+        case "com.suntek.algorithm.process.distribution.Distribution" => Distribution.process(param)
+
+        // fptree
+        case "com.suntek.algorithm.process.fptree.FPTreeDayHandler" => FPTreeDayHandler.process(param)
+        case "com.suntek.algorithm.process.fptree.FPTreeResultHandler" => FPTreeResultHandler.process(param)
+        case "com.suntek.algorithm.process.fptree.FPTreeHandler" => FPTreeHandler.process(param)
+
+        // dtw
+        case "com.suntek.algorithm.process.dtw.DtwDayHandler" => DtwDayHandler.process(param)
+        case "com.suntek.algorithm.process.dtw.DtwResultHandler" => DtwResultHandler.process(param)
+        case "com.suntek.algorithm.process.dtw.DtwHandler" => DtwHandler.process(param)
+        // lcss
+        case "com.suntek.algorithm.process.lcss.LCSSDayHandler" => LCSSDayHandler.process(param)
+        case "com.suntek.algorithm.process.lcss.LCSSResultHandler" => LCSSResultHandler.process(param)
+        case "com.suntek.algorithm.process.lcss.LCSSHandler" => LCSSHandler.process(param)
+
+        // accompany - evaluation（伴随评价）
+        case "com.suntek.algorithm.evaluation.AcompanyEvaluation" => AcompanyEvaluation.process(param)
+        case "com.suntek.algorithm.fusion.Models" => Models.deal(param)
+        case "com.suntek.algorithm.fusion.FusionHandler" => FusionHandler.process(param)
+        case "com.suntek.algorithm.fusion.FusionRelationHiveToEs" => FusionRelationHiveToEs.process(param)
+
+
+        // sv accompany（伴随）
+        case "com.suntek.algorithm.process.accompany.SvAccompanyDayHandler" => SvAccompanyDayHandler.process(param)
+        case "com.suntek.algorithm.process.accompany.SvAccompanyResultHandler" => SvAccompanyResultHandler.process(param)
+        case "com.suntek.algorithm.process.accompany.SvAccompanyHandler" => SvAccompanyHandler.process(param)
+
+        //熵值法
+        case "com.suntek.algorithm.process.entropy.FeatureDataPreprocess" => FeatureDataPreprocess.process(param) //特征数据预处理
+        case "com.suntek.algorithm.process.entropy.EntropyWeightHandler" => EntropyWeightHandler.process(param)
+        case "com.suntek.algorithm.process.entropy.EntropyResultHandler" => EntropyResultHandler.process(param)
+        case "com.suntek.algorithm.process.sql.SqlAnalysisPreprocess" => SqlAnalysisPreprocess.process(param)
+        case "com.suntek.algorithm.process.entropy.FeatureDataHandler" => FeatureDataHandler.process(param)
+        case "com.suntek.algorithm.process.entropy.EntropyHandler" => EntropyHandler.process(param)
+
+        // 数据同步
+        case "com.suntek.algorithm.process.sql.SynchronizeDataFromMPPToHive" =>SynchronizeDataFromMPPToHive.process(param)
+
+        // 轨迹统计
+        case  "com.suntek.algorithm.process.sql.MppStatistics" => {
+          if(param.mppdbType == "snowballdb") {
+            SnowballStatistics.process(param)
+          }
+          else {
+            MppStatisticsNew.process(param)
+          }
+        }
+
+          //一般规则统计
+        case "com.suntek.algorithm.fusion.PersonFaceRelateStatHandler" => PersonFaceRelateStatHandler.process(param)
+        case "com.suntek.algorithm.fusion.Car2CarSamePersonRelateHandler" => Car2CarSamePersonRelateHandler.process(param)
+        case "com.suntek.algorithm.fusion.P2PSameCarRelateHandler" => P2PSameCarRelateHandler.process(param)
+        //生命周期管理
+        case "com.suntek.algorithm.process.lifecycle.HiveLifeCycleHandler" => HiveLifeCycleHandler.process(param)
+
+          // 人脸Id与人员证件关联分析
+        case "com.suntek.algorithm.fusion.FaceIdentificationHandler" => FaceIdentificationHandler.process(param)
+        // 人员Id与车辆(主副驾驶)关联分析
+        case "com.suntek.algorithm.fusion.PersonCarDriverHandler" => PersonCarDriverHandler.process(param)
+        // 人脸Id与人员证件关联分析
+        case "com.suntek.algorithm.fusion.PersonIdBodyHandler" => PersonIdBodyHandler.process(param)
+        // 设备关联分析
+        case "com.suntek.algorithm.process.device.DeviceRelations" => DeviceRelations.process(param)
+        // 机场一人多证统计
+        case "com.suntek.algorithm.process.airport.CredentialsDetectHandler" => CredentialsDetectHandler.process(param)
+
+        case _ => throw new Exception("未能启动配置的任务,请确保启动类已存在.")
+      }
+      ConstantUtil.successTask
+      ConstantUtil.success
     } catch {
       case ex: Exception =>
         logger.error("任务执行异常：" + ex.getMessage, ex)
