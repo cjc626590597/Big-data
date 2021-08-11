@@ -762,3 +762,5 @@
     - ALTER TABLE 表名 CHANGE 列名和定义都可以改变。
 
 15. 创建外键 FOREIGN KEY(emp_no) REFERENCES employees_test(id)
+
+16. 统计某一字符串中','的个数 select length("1,2,3") - length(replace("1,2,3",",","")) 

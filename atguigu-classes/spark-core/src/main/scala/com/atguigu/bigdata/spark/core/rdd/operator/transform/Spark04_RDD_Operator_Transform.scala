@@ -15,7 +15,6 @@ object Spark04_RDD_Operator_Transform {
         list
       }
     )
-
     mapRDD.collect().foreach(println)
     sc.stop()
   }

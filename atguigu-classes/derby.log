@@ -1,7 +1,7 @@
 ----------------------------------------------------------------
-Thu Aug 05 16:49:45 CST 2021:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.12.1.1 - (1704137): instance a816c00e-017b-1581-0fb1-0000125354e0 
-on database directory C:\Users\suntek\Desktop\数据开发\Big-data\atguigu-classes\metastore_db with class loader org.apache.spark.sql.hive.client.IsolatedClientLoader$$anon$1@734ce281 
+Wed Aug 11 18:10:37 CST 2021:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.12.1.1 - (1704137): instance a816c00e-017b-34b1-435d-00001095e628 
+on database directory C:\Users\suntek\Desktop\数据开发\Big-data\atguigu-classes\metastore_db with class loader org.apache.spark.sql.hive.client.IsolatedClientLoader$$anon$1@6108fd23 
 Loaded from file:/C:/Users/suntek/.m2/repository/org/apache/derby/derby/10.12.1.1/derby-10.12.1.1.jar
 java.vendor=Oracle Corporation
 java.runtime.version=1.8.0_152-b16

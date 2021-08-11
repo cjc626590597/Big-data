@@ -234,6 +234,7 @@ object LCSSDayHandler {
     val sql = param.keyMap(lcssDayLoadDetailSqlKey).toString
     val execSql  = ReplaceSqlUtil.replaceSqlParam(sql, param)
     val queryRet = database.query(execSql, queryParamBean)
+    val rows = queryRet.rdd.collect()
     val loadDataRdd = queryRet.rdd.map{ r =>
       val object_id_a = r.get(0).toString
       val object_a_type = r.get(1).toString.toInt
