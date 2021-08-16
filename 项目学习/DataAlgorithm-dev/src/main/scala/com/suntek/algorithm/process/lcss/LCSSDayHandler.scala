@@ -127,7 +127,7 @@ object LCSSDayHandler {
     ))
 
     val df = ss.createDataFrame(retDetail, schema)
-    df.show(false)
+    df.show(true)
 
     val outTable = new TableBean(resultTableName,"hive",
       "","default","","","default")
@@ -233,8 +233,9 @@ object LCSSDayHandler {
     queryParamBean.isPage = false
     val sql = param.keyMap(lcssDayLoadDetailSqlKey).toString
     val execSql  = ReplaceSqlUtil.replaceSqlParam(sql, param)
+//    val execSql  = "SELECT object_id_a,type_a,object_id_b,type_b,device_id,timestamp_a,timestamp_b,sub_time,info_id_a,info_id_b FROM DM_RELATION_DISTRIBUTE_DETAIL  WHERE stat_date>=2021051800 and stat_date<=2021051823 and type='car-car' limit 2"
     val queryRet = database.query(execSql, queryParamBean)
-    val rows = queryRet.rdd.collect()
+    queryRet.show()
     val loadDataRdd = queryRet.rdd.map{ r =>
       val object_id_a = r.get(0).toString
       val object_a_type = r.get(1).toString.toInt
@@ -248,7 +249,6 @@ object LCSSDayHandler {
       val info_id_b  = r.getString(9)
       ((object_id_a, object_a_type, object_id_b, object_b_type), (1, device_id, sub_time, event_time_a, device_id, info_id_a, info_id_b))
     }
-
     loadDataRdd
   }
 
@@ -275,6 +275,7 @@ object LCSSDayHandler {
     val execSql  = ReplaceSqlUtil.replaceSqlParam(sql, param)
 
     val queryRet = database.query(execSql, queryParamBean)
+    queryRet.show()
 
     queryRet.rdd.map{ r =>
             val object_id = r.get(0).toString
@@ -304,19 +305,28 @@ object LCSSDayHandler {
       mergeValue = (list: List[(Int, String, Long, Long, String, String, String)], value: (Int, String, Long, Long, String, String, String)) => list:+ value,
       mergeCombiners = (list1: List[(Int, String, Long, Long, String, String, String)], list2: List[(Int, String, Long, Long, String, String, String)]) => list1 ::: list2
     )
+//    ((对象A，对象A类型，对象B，对象B类型)，（常量值1，设备ID(公共子序列)，时间差，对象A发生时间（首次时间），设备ID（首次设备），对象B发生时间（最近时间），设备ID（最近设备)）
+//    ((冀B3P40N-0, 2, 粤Q17PA3-0, 2), List((1, 440118626491017001, 0, 1621308072,               440118626491017001, 1621308072, 440118626491017001),
+      //                                   (1, 440118626491017001, 0, 1621308072,               440118626491017001, 1621308072, 440118626491017001)))
    .mapValues{ row =>
-     val seq_same_length = row.map(_._1).sum
-     val sub_time_sum = row.map(_._3).sum
+     // 相同的key进来，意味着两辆车的所有轨迹
+     //    （常量值1，设备ID(公共子序列)，时间差，对象A发生时间（首次时间），设备ID（首次设备），对象B发生时间（最近时间），设备ID（最近设备)
+     //     (1, 440118626491017001, 0, 1621308072,               440118626491017001, 1621308072, 440118626491017001)
+     val seq_same_length = row.map(_._1).sum //1 + 1 = 2
+     val sub_time_sum = row.map(_._3).sum // 0 + 0 = 0
 
      //根据时间排序，（对象A发生时间（首次时间），设备ID（首次设备），设备ID(公共子序列)，info_a，info_b）
+//                  (1621308072,           440118626491017001 440118626491017001, info_a，info_b) 1
+//                  (1621308072,           440118626491017001 440118626491017001, info_a，info_b) 2
      val timeList = row.map(r => (r._4, r._5,r._2,r._6,r._7)).sortWith(_._1 < _._1)
-     val seq_str_same = timeList.map(_._3).mkString(param.seqSeparator)
-     val seq_str_same_info_a = timeList.map(_._4).mkString(param.seqSeparator)
-     val seq_str_same_info_b = timeList.map(_._5).mkString(param.seqSeparator)
+     val seq_str_same = timeList.map(_._3).mkString(param.seqSeparator) // 公共子序列 (440118626491017001, 440118626491017001)
+     val seq_str_same_info_a = timeList.map(_._4).mkString(param.seqSeparator) // (info_a，info_a)
+     val seq_str_same_info_b = timeList.map(_._5).mkString(param.seqSeparator) // (info_b，info_b)
 
-     val first = timeList.head
-     val last = timeList.last
+     val first = timeList.head //(1621308072,           440118626491017001 440118626491017001, info_a，info_b)  1
+     val last = timeList.last //(1621308072,           440118626491017001 440118626491017001, info_a，info_b)  2
 
+     //P相同卡口次数 2        公共子序列   info_a，info_a      info_b，info_b    时间差（单位：s）的绝对值的和 0     对象A发生时间（首次时间） 对象A末次时间 对象B发生时间（首次时间） 对象B末次时间）
      (seq_same_length, seq_str_same,seq_str_same_info_a,seq_str_same_info_b, sub_time_sum, first._1, first._2, last._1, last._2)
    }
    .filter(_._2._1 >= minImpactCount)

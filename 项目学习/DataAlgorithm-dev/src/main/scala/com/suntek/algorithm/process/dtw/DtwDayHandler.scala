@@ -45,12 +45,13 @@ object DtwDayHandler {
     }
     logger.info(s"isDiffCategoryFlag: ${isDiffCategoryFlag}")
 
-    val batchId = param.keyMap("batchId").toString.substring(0, 8)
+    var batchId = param.keyMap("batchId").toString.substring(0, 8)
     param.keyMap.put(CATEGORY1, category1)
     param.keyMap.put(CATEGORY2, category2)
     timeSeconds = param.keyMap.getOrElse("timeSeconds", "600").toString.toInt
     val sdf = new SimpleDateFormat("yyyyMMdd")
     sdf.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"))
+    batchId = "20210519"
     val runTimeStamp = sdf.parse(batchId).getTime -  60 * 60 * 1000L
     val startDate = sdf.format(runTimeStamp)
     val endDate = sdf.format(runTimeStamp)
@@ -60,6 +61,8 @@ object DtwDayHandler {
       .replaceAll("@endDate@", s"${endDate}23")
       .replaceAll("@type@", s"$category1-$category2")
     logger.info(sql1)
+    //((id,(List((设备id,时间戳),(设备id,时间戳)),Map((设备id->List(时间,时间))))
+    //(粤Q17PA3-0,(List((440118626491017001,1621304472), (440118626491017001,1621308072), (440118626491017001,1621311672)),Map(440118626491017001 -> List(1621304472, 1621308072, 1621311672))))
     val objectRdd = loadObjectData(sparkSession, param, sql1) //((id，type),(时间戳，设备id))
 
     val sql2 =  param.keyMap(DISTRIBUTE_LOAD_DATA).toString
@@ -67,6 +70,7 @@ object DtwDayHandler {
       .replaceAll("@endDate@", s"${endDate}23")
       .replaceAll("@type@", s"$category1-$category2")
     logger.info(sql2)
+    //((宁V4L2K9-0,粤GSJF16-0),(1621315272,1621315272,440118626491017001))
     val data = loadData(sparkSession, param, sql2) // ((id1，id2),(id1时间戳，id2时间戳，设备id))
 
     val objectID_AB = data.map(v=>(v._1._1, v._1._2)).distinct() //(id1, id2)
@@ -310,27 +314,30 @@ object DtwDayHandler {
   : RDD[(String, (List[(String, Long)], Map[String, List[Long]]))] = {
     val databaseType = param.keyMap("databaseType").toString
     val dataBase = DataBaseFactory(ss, new Properties(), databaseType)
-    dataBase.query(sql, new QueryBean())
+    //SELECT DISTINCT OBJECT_ID, TIMESTAMP_T, DEVICE_ID
+    val rdd: RDD[(String, (List[(String, Long)], Map[String, List[Long]]))] = dataBase.query(sql, new QueryBean())
       .rdd
-      .map(r=> {
-        try{
+      .map(r => {
+        try {
           val object_id = r.get(0).toString
           val object_timeStamp = r.get(1).toString.toLong
           val device_id = r.get(2).toString
           (object_id, (device_id, object_timeStamp)) //(id,(设备id, 时间戳))
-        }catch {
-          case _:Exception =>{
+        } catch {
+          case _: Exception => {
             ("", ("", 0L))
           }
         }
       })
       .filter(_._1.nonEmpty)
       .groupByKey()
-      .map(v=>{
+      .map(v => {
         val list = v._2.toList.distinct.sortBy(_._2)
-        val map =  list.groupBy(_._1).map(v=>(v._1, v._2.map(_._2)))
+        val map = list.groupBy(_._1).map(v => (v._1, v._2.map(_._2)))
         (v._1, (list, map))
       })
+    //(粤Q17PA3-0,(List((440118626491017001,1621304472), (440118626491017001,1621308072), (440118626491017001,1621311672)),Map(440118626491017001 -> List(1621304472, 1621308072, 1621311672))))
+    rdd
   }
 
   def loadData(ss: SparkSession,
@@ -341,6 +348,8 @@ object DtwDayHandler {
     val dataBase = DataBaseFactory(ss, new Properties(), databaseType)
     val minImpactCount = param.keyMap.getOrElse("minImpactCount", "1").toString.toInt
     logger.info(s"minImpactCount: $minImpactCount")
+    //SELECT OBJECT_ID_A, OBJECT_ID_B, TIMESTAMP_A, TIMESTAMP_B, DEVICE_ID
+    //[宁V4L2K9-0,粤GSJF16-0,1621315272,1621315272,440118626491017001]
     val rdd1 = dataBase.query(sql, new QueryBean())
       .rdd
       .map(r=> {
@@ -357,6 +366,7 @@ object DtwDayHandler {
         }
       })
         .filter(_._1._1.nonEmpty)
+    val rdd2 = rdd1.collect()
     if(minImpactCount >= 2){
       val rdd2 = rdd1.map(v=>{(s"${v._1._1}_${v._1._2}_${Random.nextInt(5000)}", 1)})
         .reduceByKey(_+_)

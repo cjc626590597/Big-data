@@ -32,7 +32,8 @@ object ReplaceSqlUtil {
 
     val startDateTime = eventDateFormat.format(param.startTimeStamp)
     val endDateTime = eventDateFormat.format(param.endTimeStamp)
-    val statDateTime = statDateFormat.format(param.startTimeStamp)
+    var statDateTime = statDateFormat.format(param.startTimeStamp)
+    statDateTime = "20210518"
 
     val startDayTime = statDayFormat.format(param.startTimeStamp)
     val endDayTime = statDayFormat.format(param.endTimeStamp)
