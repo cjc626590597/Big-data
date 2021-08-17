@@ -64,6 +64,7 @@ object DtwDayHandler {
     //((id,(List((设备id,时间戳),(设备id,时间戳)),Map((设备id->List(时间,时间))))
     //(粤Q17PA3-0,(List((440118626491017001,1621304472), (440118626491017001,1621308072), (440118626491017001,1621311672)),Map(440118626491017001 -> List(1621304472, 1621308072, 1621311672))))
     val objectRdd = loadObjectData(sparkSession, param, sql1) //((id，type),(时间戳，设备id))
+    objectRdd.saveAsTextFile("output/DtwObjectRdd")
 
     val sql2 =  param.keyMap(DISTRIBUTE_LOAD_DATA).toString
       .replaceAll("@startDate@", s"${startDate}00")
@@ -72,6 +73,7 @@ object DtwDayHandler {
     logger.info(sql2)
     //((宁V4L2K9-0,粤GSJF16-0),(1621315272,1621315272,440118626491017001))
     val data = loadData(sparkSession, param, sql2) // ((id1，id2),(id1时间戳，id2时间戳，设备id))
+    data.saveAsTextFile("output/DtwData")
 
     val objectID_AB = data.map(v=>(v._1._1, v._1._2)).distinct() //(id1, id2)
 
@@ -82,7 +84,7 @@ object DtwDayHandler {
     val rdd =  objectRdd
       .join(objectID_AB)
       .map(v=> (v._2._2,(v._2._1, v._1))) // (id2, (List(设备id, id1时间戳), id1))
-      .join(objectRdd)
+      .join(objectRdd)//(id2, (  (List(设备id, id1时间戳), id1),      (List(设备id, id2时间戳))    )    )
       .map(v=>{
         val objectA = v._2._1._2
         val objectB = v._1
