@@ -64,7 +64,6 @@ object DtwDayHandler {
     //((id,(List((设备id,时间戳),(设备id,时间戳)),Map((设备id->List(时间,时间))))
     //(粤Q17PA3-0,(List((440118626491017001,1621304472), (440118626491017001,1621308072), (440118626491017001,1621311672)),Map(440118626491017001 -> List(1621304472, 1621308072, 1621311672))))
     val objectRdd = loadObjectData(sparkSession, param, sql1) //((id，type),(时间戳，设备id))
-    objectRdd.saveAsTextFile("output/DtwObjectRdd")
 
     val sql2 =  param.keyMap(DISTRIBUTE_LOAD_DATA).toString
       .replaceAll("@startDate@", s"${startDate}00")
@@ -73,7 +72,6 @@ object DtwDayHandler {
     logger.info(sql2)
     //((宁V4L2K9-0,粤GSJF16-0),(1621315272,1621315272,440118626491017001))
     val data = loadData(sparkSession, param, sql2) // ((id1，id2),(id1时间戳，id2时间戳，设备id))
-    data.saveAsTextFile("output/DtwData")
 
     val objectID_AB = data.map(v=>(v._1._1, v._1._2)).distinct() //(id1, id2)
 
@@ -92,23 +90,27 @@ object DtwDayHandler {
         val objectAMap = v._2._1._1._2
         val objectBList = v._2._2._1
         val objectBMap = v._2._2._2
+        // (travel.toList, nums) travel A满足条件的时间和B满足条件最小时间差的时间
         val (trackSubListA, numsA) = makeDtwArray(objectAList, objectBMap) // numsA 为 A对B没有匹配到的点
         val (trackSubListB, numsB) = makeDtwArray(objectBList, objectAMap)  // numsB 为 B对A没有匹配到的点
         (objectA, objectB, trackSubListA, trackSubListB, numsA * 1.0 / objectAList.size * 1.0,
           numsB * 1.0 / objectBList.size * 1.0, numsA, numsB)
       })
 
-
     val weightBC = sparkSession.sparkContext.broadcast(weight)
 
+    //travel( device1(travelA(timeStamp1), travelB( minTimeStamp._1))  device2(travelA(timeStamp1), travelB( minTimeStamp._1))   )
+    //(沪SVW4QM-0,粤Q17PA3-0,List(  (List(1621304472),List(1621304472))  )   ,List(  (List(1621304472),List(1621304472))   ),0.0,0.6666666666666666,0,2)
     val retDtw = rdd.map(v=>{
       val dtwListA = v._3.map(r=>{
+        //device1(travelA(timeStamp1), travelB( minTimeStamp._1))
         if(r._1.size == 1 && r._2.size == 1){
           SparseDTW.euclideanDistance(r._1.head, r._2.head, timeSeconds)
         }else{
           SparseDTW.spDTW_v2(r._1.toArray, r._2.toArray, timeSeconds)
         }
       })
+      //(objectA, objectB, costA, trackSubListB)
       val costA = dtwListA.sum.formatted("%.3f").toDouble
       val dtwListB = v._4.map(r=>{
         if(r._1.size == 1 && r._2.size == 1){
@@ -132,7 +134,8 @@ object DtwDayHandler {
     logger.info(s"最大值${min_max.value._2}，最小值${min_max.value._1}")
     */
 
-    val retDetail = data
+    //车1被拍到第一个时间和设备id以及最后一个
+    val retDetail = data // ((id1，id2),(id1时间戳，id2时间戳，设备id))
       .groupByKey()
       .map(v=>{
         val key = v._1
@@ -143,9 +146,12 @@ object DtwDayHandler {
     val category1Level = sparkSession.sparkContext.broadcast(Constant.PRIORITY_LEVEL(category1))
     val category2Level = sparkSession.sparkContext.broadcast(Constant.PRIORITY_LEVEL(category2))
 
+    //((id1，id2), (最早时间戳，最早关联设备，最晚时间戳，最晚关联设备，总关联次数))
     val ret = retDetail
+    //((id1, id2), (A综合相似度，B综合相似度, A没有匹配的点占比，B没有匹配的点占比，A没有匹配的点个数， B没有匹配的点个数，分数A, 分数B))
       .join(retDtw)
       .map(v=>{
+        //((id1，id2),( (最早时间戳，最早关联设备，最晚时间戳，最晚关联设备，总关联次数),  (A综合相似度，B综合相似度, A没有匹配的点占比，B没有匹配的点占比，A没有匹配的点个数， B没有匹配的点个数，分数A, 分数B) )
         // id1, id1类型， id2, id2类型，分数，最早时间戳，最早关联设备，最晚时间戳，最晚关联设备
         val gapA = v._2._2._5 // A没有匹配的点个数
         val gapB = v._2._2._6 // B没有匹配的点个数
@@ -156,6 +162,8 @@ object DtwDayHandler {
         // val scoreA = (v._2._2._1 - min_max.value._1._1) / (min_max.value._2._1 - min_max.value._1._1)
         // val scoreB = (v._2._2._2 - min_max.value._1._2) / (min_max.value._2._2 - min_max.value._1._2)
         val score = (scoreA + scoreB) / 2
+        // (id1, id1类型， id2, id2类型，总关联次数，分数，最早时间戳，最早关联设备，最晚时间戳，最晚关联设备
+        // A没有匹配的点个数, A没有匹配的点个数, B没有匹配的点占比,B没有匹配的点占比,分数A, 分数B)
         Row.fromTuple((v._1._1, category1Level.value.toString, v._1._2, category2Level.value.toString,
           v._2._1._5, score.formatted("%.3f").toDouble, v._2._1._1, v._2._1._2, v._2._1._3, v._2._1._4,
           gapA * 1.0, gapAPre.formatted("%.3f").toDouble,
@@ -164,6 +172,8 @@ object DtwDayHandler {
           scoreB.formatted("%.3f").toDouble, scoreB.formatted("%.3f").toDouble))
       })
       .coalesce(param.keyMap.getOrElse("numPartitions", "10").toString.toInt, false)
+
+    val rows = ret.collect()
 
     insertDataDetail(sparkSession, ret, tableName, param, endDate)
   }
@@ -200,15 +210,16 @@ object DtwDayHandler {
   def makeDtwArray(objectAList: List[(String, Long)],
                    objectBMap:Map[String, List[Long]])
   : (List[(List[Long], List[Long])], Int) = {
+//  (List((设备id,时间戳),(设备id,时间戳)),Map((设备id->List(时间,时间)))
     var nums = 0
-    val travel = ArrayBuffer[(List[Long], List[Long])]()
+    val travel = ArrayBuffer[(List[Long], List[Long])]() //满足条件的轨迹
     val travelA = ArrayBuffer[Long]()
     val travelB = ArrayBuffer[Long]()
     objectAList.foreach(r1 =>{
       val deviceId1 = r1._1
       val timeStamp1 = r1._2
       if(objectBMap.contains(deviceId1)){
-        val minTimeStamp = objectBMap(deviceId1).map(r2 => (r2, Math.abs(r2 - r1._2))).minBy(_._2)
+        val minTimeStamp = objectBMap(deviceId1).map(r2 => (r2, Math.abs(r2 - r1._2))).minBy(_._2) //最小的时间差
         if(minTimeStamp._2 > timeSeconds) {
           nums += 1
           if(travelA.size > 0 && travelB.size > 0){
@@ -232,7 +243,7 @@ object DtwDayHandler {
     if(travelA.size > 0 && travelB.size > 0){
       travel.append((travelA.toList, travelB.toList))
     }
-    (travel.toList, nums)
+    (travel.toList, nums) //
   }
 
   def getObjectID_A(data: RDD[((String, String), (Long, Long, String))],

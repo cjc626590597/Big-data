@@ -43,7 +43,10 @@ DM_RELATION_DISTRIBUTE_DETAIL表中存放了LCSS算法实现的最长公共子�
 **DTW算法的步骤为：**
 
 1. **计算两个序列各个点之间的距离矩阵。**
+
 2. **寻找一条从矩阵左上角到右下角的路径，使得路径上的元素和最小。**
+
+具体实现步骤查看参考论文《SparseDTW: A Novel Approach to Speed up Dynamic Time Warping》
 
 [动态时间规整（DTW）算法简介](https://zhuanlan.zhihu.com/p/43247215)
 

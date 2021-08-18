@@ -196,7 +196,7 @@ object SparseDTW {
     var sm: TreeMap[Int, SMBean] = new TreeMap[Int, SMBean]()
     for(i<- 0 until x.length){
       for(j<- 0 until y.length){
-        val key =  y.length * j + (i+1)
+        val key =  y.length * j + (i+1) //?????
         val bean = new SMBean(i, j, key)
         val v1 = x(i)
         val v2 = y(j)
@@ -214,6 +214,7 @@ object SparseDTW {
                       y: Array[Long]
                      )
   : Double = {
+    //device1(travelA(timeStamp1), travelB( minTimeStamp._1))
     sm.keySet.foreach(v=>{
       var minCost = 0D
       val lowerNeighors = findLowerNeighors (v, n, sm)
@@ -270,6 +271,7 @@ object SparseDTW {
                y: Array[Long],
                timeSeconds: Long)
   : Double ={
+    //device1( x(1timeStamp1,2timeStamp1), y( 1minTimeStamp._1,2minTimeStamp))
     //val (x1, y1) = quantize(x, y)
     val n = y.length
     val sm = unblockingSM_v2(x, y, n, timeSeconds)

@@ -764,3 +764,6 @@
 15. 创建外键 FOREIGN KEY(emp_no) REFERENCES employees_test(id)
 
 16. 统计某一字符串中','的个数 select length("1,2,3") - length(replace("1,2,3",",","")) 
+
+17. 获取指定子字符串 substr(e.first_name,0,2) 等同于 left(first_name,2)                substr(e.first_name,-2) 等同于 right(first_name,2)
+
