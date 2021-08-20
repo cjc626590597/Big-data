@@ -62,7 +62,7 @@ object Spark03_WordCount1 {
     val rdd4 = rdd3.combineByKey(
       v=>v,
       (x:Int,y:Int) => x+y,
-      (x:Int,y:Int) => x+y,
+      (x:Int,y:Int) => x+y
     )
   }
 

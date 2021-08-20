@@ -14,7 +14,7 @@ object Spark01_RDD_save {
     ))
 
     value.saveAsTextFile("output")
-    value.saveAsObjectFile("output1")
-    value.saveAsSequenceFile("output2")
+//    value.saveAsObjectFile("output1")
+//    value.saveAsSequenceFile("output2")
   }
 }

@@ -449,8 +449,7 @@ object LCSSDayHandler {
 
     //计算相似度
     val resultDF = computeSimDay(param, lcsRdd, objectSeqRdd)
-    resultDF.saveAsTextFile("output/LcssResultDF")
-
+    val rdd = resultDF.collect()
     //数据落库
     insertData(sparkSession, resultDF, param)
 

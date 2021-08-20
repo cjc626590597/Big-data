@@ -8,8 +8,8 @@ object Spark01_RDD_load {
     val sc = new SparkContext(sparkConf)
 
     sc.textFile("output").collect().foreach(println)
-    sc.objectFile("output1").collect().foreach(println)
-    sc.sequenceFile[String,Int]("output2").collect().foreach(println)
+//    sc.objectFile("output1").collect().foreach(println)
+//    sc.sequenceFile[String,Int]("output2").collect().foreach(println)
 
 
   }

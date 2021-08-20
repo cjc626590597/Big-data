@@ -133,7 +133,7 @@ object DtwDayHandler {
     /*val min_max = ss.sparkContext.broadcast(getMaxMin(valueRdd))
     logger.info(s"最大值${min_max.value._2}，最小值${min_max.value._1}")
     */
-
+    val ddd = retDtw.collect()
     //车1被拍到第一个时间和设备id以及最后一个
     val retDetail = data // ((id1，id2),(id1时间戳，id2时间戳，设备id))
       .groupByKey()

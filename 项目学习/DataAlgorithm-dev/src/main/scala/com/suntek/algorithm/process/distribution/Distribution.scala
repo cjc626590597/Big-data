@@ -64,10 +64,14 @@ object Distribution {
                   ): Unit = {
     val isDiffCategory =  param.keyMap("isDiffCategory").toString.toBoolean
     genTime(param)
-    val startDateTime = param.keyMap("startDateTime").toString
-    val endDateTime = param.keyMap("endDateTime").toString
-    val startDate = param.keyMap("statDate").toString
-    val hour = param.keyMap("hour").toString
+//    val startDateTime = param.keyMap("startDateTime").toString
+//    val endDateTime = param.keyMap("endDateTime").toString
+//    val startDate = param.keyMap("statDate").toString
+//    val hour = param.keyMap("hour").toString
+    val startDateTime = "20210518120000"
+    val endDateTime = "20210518130000"
+    val startDate = "2021051800"
+    val hour = "12"
 
     // 获取设备与设备的关系
     val retDeviceRound = loadDeviceRound(ss, param) // (设备ID1, 设备ID2)
@@ -101,7 +105,8 @@ object Distribution {
 
     // 计算分布详情
     val retDetail = genDetectionDis(ss, ret1, ret2, param, isDiffCategory, retDeviceRoundBC) //设备，对象A，对象A类型，对象B，对象B类型, 对象A时间戳, 对象B时间戳, 时间差, 入库时间
-    insertDataDetail(ss, retDetail, param, tableName1)
+    retDetail.saveAsTextFile("output/DistributionRetDetail")
+//    insertDataDetail(ss, retDetail, param, tableName1)
 
     // 计算分布
     // 设备，对象A，对象A类型，对象B，对象B类型, 对象A时间戳, 对象B时间戳, 时间差, 入库时间
@@ -114,8 +119,9 @@ object Distribution {
         val total2 = ret2CountBC.value.getOrElse(v._1._4, 0)
         (v._1._1, v._1._2, v._1._3,  v._1._4,  v._1._5, v._2, total1, total2, nowBC.value)
       })
+    val array = ret.saveAsTextFile("output/DistributionRet")
 
-    insertData(ss, ret, param, tableName2)
+//    insertData(ss, ret, param, tableName2)
 
     // 个别算法，按小时有特殊处理
     val algorithmTypes = param.keyMap.getOrElse("algorithmType", "").toString.split(",")
@@ -147,6 +153,8 @@ object Distribution {
     val sql = param.keyMap(param.keyMap(DEVICE_REL_SQL).toString).toString
     val databaseType = param.keyMap.getOrElse("databaseType","hive").toString
     val dataBase = DataBaseFactory(ss, new Properties(), databaseType)
+    val rows = dataBase.query(sql, new QueryBean()).rdd
+
     val ret = dataBase.query(sql, new QueryBean())
       .rdd
       .map(r=> {
@@ -180,7 +188,9 @@ object Distribution {
     val timeSeriesThreshold = param.keyMap.getOrElse(TIMESERIESTHRESHOLD, "300").toString.toLong
     val timeSeriesThresholdBC = ss.sparkContext.broadcast(timeSeriesThreshold)
     val dateFormat = ss.sparkContext.broadcast(param.keyMap("dateFormat").toString)
+    val rows = dataBase.query(sql, queryParam).rdd.saveAsTextFile("output/DistributionRet1")
 
+//SELECT DISTINCT JGSK, CONCAT(HPHM,'-',HPYS) AS HPHM, TOLLGATE_ID,INFO_ID FROM CAR_DETECT_INFO WHERE stat_day=210815 AND hour=22 AND JGSK>= 210815220000 AND JGSK< 210815230000 AND HPHM is not null AND length(HPHM) > 3 AND isValidEntity(HPHM,'CAR')
     dataBase.query(sql, queryParam)
       .rdd
       .map(v=>{
