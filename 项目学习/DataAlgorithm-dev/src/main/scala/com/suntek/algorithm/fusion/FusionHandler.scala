@@ -92,6 +92,8 @@ object FusionHandler {
     relTypes.split(",").foreach { r =>
       param.keyMap += "relType" -> r
       param.keyMap += "weights" -> weights
+      //test test!!!
+      param.keyMap("statDate") = "2020052609"
       val p = getParam(spark, param)
       val jsonFusion =
         s"""$master#--#{"analyzeModel":{"inputs":[
@@ -134,7 +136,7 @@ object FusionHandler {
     FusionRelationHiveToEs.process(esResultParam)
   }
 
-
+  //寻找最大的统计时间，且这个统计时间存在所有的表 例如dm_lcss, dm_dtw, 不存在的表则不考虑，并重新分配权重
   def getParam(spark: SparkSession, param: Param): (String, String) = {
 
     val weightsMap = transferWeights(param)
@@ -252,6 +254,7 @@ object FusionHandler {
   def allPartition(spark: SparkSession, tableName: String): DataFrame ={
     val dm = spark.sql(s"show partitions $tableName ").collect()
     //Row("stat_date=2020052609/ rel_type=2/ rel_id=06-0004-0002-02")
+    //dm_lcss: [stat_date=20210518/rel_type=2/type=car-car]
     if (dm.nonEmpty){
       val schemaArray = dm.head.getString(0).split(SPLITPATITIONS).map(x=> {
         val strs = x.split(INNERSPLIT)

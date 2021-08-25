@@ -23,94 +23,117 @@ object distributionMain {
     val distributionRet1 = spark.sparkContext.textFile("output/DistributionRet1")
     val retDeviceRoundBC = spark.sparkContext.broadcast(new DeviceGroupS())
     val ret1 = str2ret1(spark, retDeviceRoundBC, param, distributionRet1)
+    val t1 = ret1.map(v=> {(v._2._1, v._1, v._2._2)}).map(v=>(v._1, 1)).reduceByKey(_+_).collect().toMap
+    val ret1CountBC = spark.sparkContext.broadcast(t1)
+    var ret2CountBC = ret1CountBC
+    val ret2 = ret1
 
-//    val retDetail = genDetectionDis(ss, ret1, ret2, param, isDiffCategory, retDeviceRoundBC) //设备，对象A，对象A类型，对象B，对象B类型, 对象A时间戳, 对象B时间戳, 时间差, 入库时间
+    val retDetail = genDetectionDis(spark, ret1, ret2, param, false, retDeviceRoundBC) //设备，对象A，对象A类型，对象B，对象B类型, 对象A时间戳, 对象B时间戳, 时间差, 入库时间
 
-    val rdd = ret1.collect()
+    val dateFormat = new SimpleDateFormat("yyyyMMddHHmmss")
+    val nowBC = spark.sparkContext.broadcast(dateFormat.format(new Date()))
+    val ret = retDetail.map(v => ((v._1, v._2, v._3, v._4, v._5), 1)) // key = (设备，对象A，对象A类型，对象B，对象B类型)
+      .reduceByKey(_ + _)
+      .map(v=>{
+        val total1 = ret1CountBC.value.getOrElse(v._1._2, 0)
+        val total2 = ret2CountBC.value.getOrElse(v._1._4, 0)
+        //(设备，对象A，对象A类型，对象B，对象B类型, 关联总次数, 对象A次数, 对象B次数, 格式)
+        (v._1._1, v._1._2, v._1._3,  v._1._4,  v._1._5, v._2, total1, total2, nowBC.value)
+      })
+
+    val rdd = ret.collect()
     println(1)
   }
 
-//  def genDetectionDis(ss: SparkSession,
-//                      ret1: RDD[(String, (String, Long, String))],
-//                      ret2: RDD[(String, (String, Long, String))],
-//                      param: Param,
-//                      isDiffCategory: Boolean,
-//                      retDeviceRoundBC: Broadcast[DeviceGroupS]
-//                     )
-//  : RDD[(String, String, String, String, String, Long, Long, Long, String, String, String)] = {
-//    // ret1：(关联设备, (id1, 时间戳，设备))
-//    // ret2：(关联设备, (id2, 时间戳，设备))
-//    val secondsSeriesThreshold = param.keyMap.getOrElse(SECONDSSERIESTHRESHOLD, "60").toString.toLong
-//    val secondsSeriesThresholdBC = ss.sparkContext.broadcast(secondsSeriesThreshold)
-//    val category1 = param.keyMap(CATEGORY1).toString
-//    val category2 = param.keyMap(CATEGORY2).toString
-//
-//    val category1Level = ss.sparkContext.broadcast(Constant.PRIORITY_LEVEL(category1))
-//    val category2Level = ss.sparkContext.broadcast(Constant.PRIORITY_LEVEL(category2))
-//    val dateFormat = new SimpleDateFormat(param.keyMap("dateFormat").toString)
-//    val nowBC = ss.sparkContext.broadcast(dateFormat.format(new Date()))
-//    val ret = if(isDiffCategory){
-//      ret1.join(ret2)
-//        .map{ v=>
-//          try{
-//            val idTimeStamp2 = v._2._2._2
-//            val idTimeStamp1 = v._2._1._2
-//            //  infoId
-//            val infoIdA = v._2._1._3
-//            val infoIdB = v._2._2._3
-//            if(idTimeStamp1 - idTimeStamp2 < secondsSeriesThresholdBC.value
-//              && idTimeStamp1 - idTimeStamp2 > secondsSeriesThresholdBC.value * -1){
-//              //(设备，id1，id2, 时间戳)
-//              (( v._1, v._2._1._1, v._2._2._1,  idTimeStamp2), ((idTimeStamp1, 1), (infoIdA, infoIdB)))
-//            }else{
-//              (("", "", "", 0L), ((0L, 0), ("", "")))
-//            }
-//          }catch{
-//            case _: Exception=> (("", "", "", 0L), ((0L, 0), ("", "")))
-//          }
-//        }
-//    }else{
-//      ret1.join(ret2)
-//        .filter(r => r._2._1._1 != r._2._2._1) // 过滤id1 = id2 数据
-//        .map(v=> {
-//          try{
-//            val idTimeStamp2 = v._2._2._2
-//            val idTimeStamp1 = v._2._1._2
-//            //  (设备Id, infoId)
-//            val infoIdA = v._2._1._3
-//            val infoIdB = v._2._2._3
-//            if(idTimeStamp1 - idTimeStamp2 < secondsSeriesThresholdBC.value
-//              && idTimeStamp1 - idTimeStamp2 > secondsSeriesThresholdBC.value * -1){
-//              //(设备，id1，id2, 时间戳)
-//              val (d1, d2, t1, t2) = neaten(v._2._1._1, v._2._2._1, idTimeStamp1, idTimeStamp2)
-//              if(v._2._2._1 < v._2._1._1) {
-//                ((v._1, d1, d2,  t2), ((t1, 1), (infoIdB, infoIdA)))
-//              } else {
-//                ((v._1, d1, d2,  t2), ((t1, 1), (infoIdA, infoIdB)))
-//              }
-//            }else{
-//              (("", "", "", 0L), ((0L, 0), ("", "")))
-//            }
-//          }catch{
-//            case _: Exception=> (("", "", "", 0L), ((0L, 0), ("", "")))
-//          }
-//        })
-//    }
-//    ret.filter(v=> v._1._1.nonEmpty)
-//      .reduceByKey ((x, y) => ((x._1._1 + y._1._1, x._1._2 + y._1._2), x._2))
-//      .map{
-//        case ((deviceValue, d1, d2,  t2), ((timeSum, counts), (infoIdA, infoIdB))) =>
-//          val timeStamp1 = timeSum / counts
-//          //设备，对象A，对象A类型，对象B，对象B类型, 对象A时间戳, 对象B时间戳, 时间差, 入库时间, 对象A设备Id,对象AInfoId,对象B设备Id,对象B InfoId,
-//          var deviceId = deviceValue
-//          if(retDeviceRoundBC.value.deviceGroups.contains((deviceValue))){
-//            deviceId = retDeviceRoundBC.value.deviceGroups(deviceValue).deviceList1.head
-//          }
-//          (deviceId, d1, category1Level.value.toString, d2, category2Level.value.toString, timeStamp1, t2, math.abs(timeStamp1-t2),
-//            nowBC.value, infoIdA, infoIdB)
-//      }
-//      .persist(StorageLevel.MEMORY_AND_DISK)
-//  }
+  def genDetectionDis(ss: SparkSession,
+                      ret1: RDD[(String, (String, Long, String))],
+                      ret2: RDD[(String, (String, Long, String))],
+                      param: Param,
+                      isDiffCategory: Boolean,
+                      retDeviceRoundBC: Broadcast[DeviceGroupS]
+                     )
+  : RDD[(String, String, String, String, String, Long, Long, Long, String, String, String)] = {
+    // ret1：(关联设备, (id1, 时间戳，设备))
+    // ret2：(关联设备, (id2, 时间戳，设备))
+    val secondsSeriesThreshold = "60".toString.toLong
+    val secondsSeriesThresholdBC = ss.sparkContext.broadcast(secondsSeriesThreshold)
+    val category1 = "car"
+    val category2 = "car"
+
+    val category1Level = ss.sparkContext.broadcast(Constant.PRIORITY_LEVEL(category1))
+    val category2Level = ss.sparkContext.broadcast(Constant.PRIORITY_LEVEL(category2))
+    val dateFormat = new SimpleDateFormat("yyyyMMddHHmmss")
+    val nowBC = ss.sparkContext.broadcast(dateFormat.format(new Date()))
+    val ret = if(isDiffCategory){
+      ret1.join(ret2)
+        .map{ v=>
+          try{
+            val idTimeStamp2 = v._2._2._2
+            val idTimeStamp1 = v._2._1._2
+            //  infoId
+            val infoIdA = v._2._1._3
+            val infoIdB = v._2._2._3
+            if(idTimeStamp1 - idTimeStamp2 < secondsSeriesThresholdBC.value
+              && idTimeStamp1 - idTimeStamp2 > secondsSeriesThresholdBC.value * -1){
+              //(设备，id1，id2, 时间戳)
+              (( v._1, v._2._1._1, v._2._2._1,  idTimeStamp2), ((idTimeStamp1, 1), (infoIdA, infoIdB)))
+            }else{
+              (("", "", "", 0L), ((0L, 0), ("", "")))
+            }
+          }catch{
+            case _: Exception=> (("", "", "", 0L), ((0L, 0), ("", "")))
+          }
+        }
+    }else{
+      ret1.join(ret2)
+        .filter(r => r._2._1._1 != r._2._2._1) // 过滤id1 = id2 数据
+        .map(v=> {
+          try{
+            val idTimeStamp2 = v._2._2._2
+            val idTimeStamp1 = v._2._1._2
+            //  (设备Id, infoId)
+            val infoIdA = v._2._1._3
+            val infoIdB = v._2._2._3
+            if(idTimeStamp1 - idTimeStamp2 < secondsSeriesThresholdBC.value
+              && idTimeStamp1 - idTimeStamp2 > secondsSeriesThresholdBC.value * -1){
+              //(设备，id1，id2, 时间戳)
+              val (d1, d2, t1, t2) = neaten(v._2._1._1, v._2._2._1, idTimeStamp1, idTimeStamp2)
+              if(v._2._2._1 < v._2._1._1) {
+                ((v._1, d1, d2,  t2), ((t1, 1), (infoIdB, infoIdA)))
+              } else {
+                ((v._1, d1, d2,  t2), ((t1, 1), (infoIdA, infoIdB)))
+              }
+            }else{
+              (("", "", "", 0L), ((0L, 0), ("", "")))
+            }
+          }catch{
+            case _: Exception=> (("", "", "", 0L), ((0L, 0), ("", "")))
+          }
+        })
+    }
+    ret.filter(v=> v._1._1.nonEmpty)
+      .reduceByKey ((x, y) => ((x._1._1 + y._1._1, x._1._2 + y._1._2), x._2))
+      .map{
+        case ((deviceValue, d1, d2,  t2), ((timeSum, counts), (infoIdA, infoIdB))) =>
+          val timeStamp1 = timeSum / counts
+          //设备，对象A，对象A类型，对象B，对象B类型, 对象A时间戳, 对象B时间戳, 时间差, 入库时间, 对象A设备Id,对象AInfoId,对象B设备Id,对象B InfoId,
+          var deviceId = deviceValue
+          if(retDeviceRoundBC.value.deviceGroups.contains((deviceValue))){
+            deviceId = retDeviceRoundBC.value.deviceGroups(deviceValue).deviceList1.head
+          }
+          (deviceId, d1, category1Level.value.toString, d2, category2Level.value.toString, timeStamp1, t2, math.abs(timeStamp1-t2),
+            nowBC.value, infoIdA, infoIdB)
+      }
+      .persist(StorageLevel.MEMORY_AND_DISK)
+  }
+
+  def neaten(data : (String, String, Long, Long)): (String, String, Long, Long) ={
+    if(data._2 < data._1) {
+      (data._2 , data._1, data._4, data._3)
+    } else {
+      data
+    }
+  }
 
   def str2ret1(ss: SparkSession, retDeviceRoundBC: Broadcast[DeviceGroupS],param:Param, dataRdd: RDD[String], types: Int = 1):
   RDD[(String, (String, Long, String))] ={
@@ -120,7 +143,7 @@ object distributionMain {
 
     dataRdd.map{ row =>
       try {
-        val str = row.replace("(","").replace(")","")
+        val str = row.replace("[","").replace("]","")
         val r = str.split(",")
         val time = s"20${r(0).toString}"
         val id = r(1).toString.toUpperCase

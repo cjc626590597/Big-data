@@ -35,11 +35,13 @@ class ModelFusion private(data: Array[RDD[((String, String), Double)]], method: 
       funsion()
     } else {
       val data = funsion().map { case ((a, b), sim) => (a, (b, sim)) }
-      groupBykey(data).mapValues {  iter =>
+      val value = groupBykey(data).mapValues { iter =>
         iter.toList.sortWith(_._2 > _._2)
           .take(topN)
       }
         .flatMap { case (a, list) => list.map(x => ((a, x._1), x._2)) }
+      val tuples = value.collect()
+      value
     }
 
   }

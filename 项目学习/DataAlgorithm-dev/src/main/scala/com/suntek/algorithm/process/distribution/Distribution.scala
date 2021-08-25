@@ -84,6 +84,7 @@ object Distribution {
       .replaceAll("@hour@", hour)
     logger.info(data_sql_1)
     val ret1 = loadData(ss, data_sql_1, retDeviceRoundBC, param) // (关联设备, (id, 时间戳, 设备))
+    val array0 = ret1.collect()
 
     val t1 = ret1.map(v=> {(v._2._1, v._1, v._2._2)}).map(v=>(v._1, 1)).reduceByKey(_+_).collect().toMap
     val ret1CountBC = ss.sparkContext.broadcast(t1)
@@ -104,8 +105,8 @@ object Distribution {
     }
 
     // 计算分布详情
-    val retDetail = genDetectionDis(ss, ret1, ret2, param, isDiffCategory, retDeviceRoundBC) //设备，对象A，对象A类型，对象B，对象B类型, 对象A时间戳, 对象B时间戳, 时间差, 入库时间
-    retDetail.saveAsTextFile("output/DistributionRetDetail")
+    val retDetail = genDetectionDis(ss, ret1, ret2, param, isDiffCategory, retDeviceRoundBC) //设备，对象A，对象A类型，对象B，对象B类型, 对象A时间戳, 对象B时间戳, 时间差, 入库时间, 对象A InfoId, 对象B InfoId
+    val array1 = retDetail.collect()
 //    insertDataDetail(ss, retDetail, param, tableName1)
 
     // 计算分布
@@ -117,9 +118,10 @@ object Distribution {
       .map(v=>{
         val total1 = ret1CountBC.value.getOrElse(v._1._2, 0)
         val total2 = ret2CountBC.value.getOrElse(v._1._4, 0)
+        //(设备，对象A，对象A类型，对象B，对象B类型, 关联总次数, 对象A次数, 对象B次数, 格式)
         (v._1._1, v._1._2, v._1._3,  v._1._4,  v._1._5, v._2, total1, total2, nowBC.value)
       })
-    val array = ret.saveAsTextFile("output/DistributionRet")
+    val array2 = ret.collect()
 
 //    insertData(ss, ret, param, tableName2)
 
@@ -188,8 +190,9 @@ object Distribution {
     val timeSeriesThreshold = param.keyMap.getOrElse(TIMESERIESTHRESHOLD, "300").toString.toLong
     val timeSeriesThresholdBC = ss.sparkContext.broadcast(timeSeriesThreshold)
     val dateFormat = ss.sparkContext.broadcast(param.keyMap("dateFormat").toString)
-    val rows = dataBase.query(sql, queryParam).rdd.saveAsTextFile("output/DistributionRet1")
-
+    val sql1 = "SELECT * FROM CAR_DETECT_INFO WHERE stat_day=210518 AND hour=12 AND JGSK>= 210518120000 AND JGSK< 210518130000 AND HPHM is not null AND length(HPHM) > 3 AND isValidEntity(HPHM,'CAR')"
+    dataBase.query(sql1, queryParam).show()
+      //[210518122112,蒙DC3VN8-0,440118626491017001,745598846080049753]
 //SELECT DISTINCT JGSK, CONCAT(HPHM,'-',HPYS) AS HPHM, TOLLGATE_ID,INFO_ID FROM CAR_DETECT_INFO WHERE stat_day=210815 AND hour=22 AND JGSK>= 210815220000 AND JGSK< 210815230000 AND HPHM is not null AND length(HPHM) > 3 AND isValidEntity(HPHM,'CAR')
     dataBase.query(sql, queryParam)
       .rdd
@@ -365,11 +368,12 @@ object Distribution {
           }
     }else{
       ret1.join(ret2)
+        // (关联设备, ((id1, 时间戳，设备), (id2, 时间戳，设备)))  (关联设备, ((id3, 时间戳，设备), (id4, 时间戳，设备)))
         .filter(r => r._2._1._1 != r._2._2._1) // 过滤id1 = id2 数据
         .map(v=> {
           try{
-            val idTimeStamp2 = v._2._2._2
             val idTimeStamp1 = v._2._1._2
+            val idTimeStamp2 = v._2._2._2
             //  (设备Id, infoId)
             val infoIdA = v._2._1._3
             val infoIdB = v._2._2._3
@@ -391,6 +395,7 @@ object Distribution {
         })
     }
     ret.filter(v=> v._1._1.nonEmpty)
+        //((deviceid, d1, d2,  t2), ((t1, 1), (infoIdA, infoIdB)))
         .reduceByKey ((x, y) => ((x._1._1 + y._1._1, x._1._2 + y._1._2), x._2))
         .map{
           case ((deviceValue, d1, d2,  t2), ((timeSum, counts), (infoIdA, infoIdB))) =>

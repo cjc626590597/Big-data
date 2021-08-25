@@ -177,6 +177,7 @@ object DataManager {
     val properties = param.keyMap("properties").asInstanceOf[Properties]
     val dataBase = DataBaseFactory(ss, properties, databaseType)
      f(param).map { sql =>
+       dataBase.query(sql, queryParam).show()
         dataBase.query(sql, queryParam)
           .rdd.map(g)
       }

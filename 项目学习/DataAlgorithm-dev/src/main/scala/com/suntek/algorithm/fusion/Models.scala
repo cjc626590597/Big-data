@@ -121,7 +121,9 @@ object Models {
     val otherData = DataManager.multiLoadData(ss, param, queryParam, otherSqls, otherSchema)
       .reduce(_.union(_)).groupByKey().mapValues(iter => iter.head)
     val r = fusionData.join(otherData).map(format)
-    insertData(ss, r, properties, tableName = "DM_RELATION", param)
+    val rdd = r.collect()
+//    insertData(ss, r, properties, tableName = "DM_RELATION", param)
+    println("1")
   }
 
   def deal(param: Param): Unit = {
