@@ -481,3 +481,36 @@ Liskov替换原则（Liskov-Substituion Principle）：子类必须能够替换�
 **IS-A：**表示继承。父类与子类，这个就不解释了。
 
 要注意：还有一种关系：**组合关系**也是关联关系的一种特例，它体现一种contains-a的关系，这种关系比聚合更强，也称为强聚合。它同样体现整体与部分的关系，但这种整体和部分是不可分割的。
+
+```sql
+SELECT DISTINCT OBJECT_ID, TIMESTAMP_T, DEVICE_ID 
+FROM ( 
+    SELECT DISTINCT OBJECT_ID_A AS OBJECT_ID, TIMESTAMP_A AS TIMESTAMP_T, DEVICE_ID 
+    FROM DM_RELATION_DISTRIBUTE_DETAIL 
+    WHERE STAT_DATE>= '@startDate@' 
+    AND STAT_DATE <= '@endDate@' 
+    AND TYPE = '@type@'  
+    UNION ALL SELECT DISTINCT OBJECT_ID_B AS OBJECT_ID, TIMESTAMP_B AS TIMESTAMP_T, DEVICE_ID 
+    FROM DM_RELATION_DISTRIBUTE_DETAIL 
+    WHERE STAT_DATE>= '@startDate@' 
+    AND STAT_DATE <= '@endDate@' 
+    AND TYPE = '@type@')b
+```
+
+#### 30. Servlet的生命周期
+
+Servlet的生命周期分为5个阶段：加载、创建、初始化、处理客户请求、卸载。
+
+(1)加载：容器通过类加载器使用servlet类对应的文件加载servlet
+
+(2)创建：通过调用servlet构造函数创建一个servlet对象
+
+(3)初始化：调用init方法初始化
+
+(4)处理客户请求：每当有一个客户请求，容器会创建一个线程来处理客户请求
+
+(5)卸载：调用destroy方法让servlet自己释放其占用的资源
+
+#### 31. 内部类
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/33d0026daba24a518c4552e15018a4a0.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBAQ2hhbkNKNjY2,size_20,color_FFFFFF,t_70,g_se,x_16)
